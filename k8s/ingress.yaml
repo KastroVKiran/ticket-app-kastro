@@ -8,40 +8,44 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "Access-Control-Allow-Origin: *";
+      more_set_headers "Access-Control-Allow-Methods: GET, POST, OPTIONS";
+      more_set_headers "Access-Control-Allow-Headers: Content-Type, Authorization";
 spec:
   rules:
   - http:
       paths:
       - path: /user-service(/|$)(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: user-service
             port:
               number: 80
       - path: /movie-service(/|$)(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: movie-service
             port:
               number: 80
       - path: /theater-service(/|$)(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: theater-service
             port:
               number: 80
       - path: /booking-service(/|$)(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: booking-service
             port:
               number: 80
       - path: /payment-service(/|$)(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: payment-service
