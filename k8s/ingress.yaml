@@ -10,8 +10,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
-  - host: moviebox.local
-    http:
+  - http:
       paths:
       - path: /user-service(/|$)(.*)
         pathType: Prefix
