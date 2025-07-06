@@ -1,0 +1,73 @@
+#!/bin/bash
+
+echo "=========================================="
+echo "🎬 MOVIEBOX APPLICATION ACCESS INFORMATION"
+echo "=========================================="
+echo ""
+
+# Update kubeconfig
+aws eks update-kubeconfig --region us-east-1 --name kastro-eks >/dev/null 2>&1
+
+# Get LoadBalancer URL
+LB_URL=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
+
+if [ ! -z "$LB_URL" ]; then
+    echo "🌐 APPLICATION ACCESS URLs:"
+    echo "   Main Application: http://$LB_URL"
+    echo "   User Service:     http://$LB_URL/user-service"
+    echo "   Movie Service:    http://$LB_URL/movie-service"
+    echo "   Theater Service:  http://$LB_URL/theater-service"
+    echo "   Booking Service:  http://$LB_URL/booking-service"
+    echo "   Payment Service:  http://$LB_URL/payment-service"
+    echo "   Admin Dashboard:  http://$LB_URL/user-service/admin"
+    echo ""
+    echo "👤 USER CREDENTIALS:"
+    echo "   Registration: Create new account at http://$LB_URL/user-service/register"
+    echo "   Login: Use registered credentials at http://$LB_URL/user-service/login"
+    echo ""
+    echo "🔧 ADMIN ACCESS:"
+    echo "   Admin Dashboard: http://$LB_URL/user-service/admin"
+    echo "   (No authentication required for demo)"
+    echo ""
+    echo "🗄️ DATABASE ACCESS COMMANDS:"
+    echo "   # Connect to MongoDB pod"
+    echo "   kubectl exec -it \$(kubectl get pods -n moviebox -l app=mongo -o jsonpath='{.items[0].metadata.name}') -n moviebox -- mongosh"
+    echo ""
+    echo "   # Inside MongoDB shell:"
+    echo "   use moviebooking"
+    echo "   show collections"
+    echo "   db.users.find()"
+    echo "   db.bookings.find()"
+    echo "   db.payments.find()"
+    echo ""
+    echo "🎯 QUICK TEST FLOW:"
+    echo "   1. Visit: http://$LB_URL"
+    echo "   2. Click 'Register' and create a new user account"
+    echo "   3. Login with your credentials"
+    echo "   4. Browse movies and theaters"
+    echo "   5. Make a booking"
+    echo "   6. Complete fake payment"
+    echo "   7. Get QR code confirmation"
+    echo ""
+    echo "📱 WHATSAPP GROUP:"
+    echo "   QR Code links to: https://chat.whatsapp.com/EGw6ZlwUHZc82cA0vXFnwm?mode=r_c"
+    echo ""
+    echo "🔗 SOCIAL LINKS:"
+    echo "   YouTube: https://www.youtube.com/@LearnWithKASTRO"
+    echo "   LinkedIn: https://linkedin.com/in/kastro-kiran"
+    echo ""
+else
+    echo "⚠️  LoadBalancer URL not yet available. Please wait a few minutes and run this script again."
+    echo ""
+    echo "To check LoadBalancer status:"
+    echo "kubectl get svc ingress-nginx-controller -n ingress-nginx"
+fi
+
+echo "📊 CURRENT DEPLOYMENT STATUS:"
+kubectl get pods -n moviebox 2>/dev/null || echo "No pods found in moviebox namespace"
+echo ""
+kubectl get services -n moviebox 2>/dev/null || echo "No services found in moviebox namespace"
+echo ""
+kubectl get ingress -n moviebox 2>/dev/null || echo "No ingress found in moviebox namespace"
+echo ""
+echo "=========================================="
