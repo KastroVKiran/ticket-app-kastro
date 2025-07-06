@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_IMAGE = "kastrov/booking-service"
+        DOCKER_TAG = "${BUILD_NUMBER}"
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-repo/movie-booking-app.git'
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dir('booking-service') {
+                        def image = docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                        docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-creds') {
+                            image.push()
+                            image.push('latest')
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy to EKS') {
+            steps {
+                script {
+                    withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                                        credentialsId: 'aws-creds', 
+                                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                        sh """
+                            aws eks update-kubeconfig --region us-east-1 --name kastro-eks
+                            sed -i 's|kastrov/booking-service:latest|kastrov/booking-service:${DOCKER_TAG}|g\' k8s/booking-service-deployment.yaml
+                            kubectl apply -f k8s/booking-service-deployment.yaml
+                            kubectl apply -f k8s/booking-service-service.yaml
+                        """
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

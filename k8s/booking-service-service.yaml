@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: booking-service
+  namespace: moviebox
+spec:
+  selector:
+    app: booking-service
+  ports:
+  - port: 80
+    targetPort: 5004
+  type: ClusterIP

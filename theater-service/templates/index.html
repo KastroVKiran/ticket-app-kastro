@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theaters - MovieBox</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .theater-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .theater-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav class="bg-black bg-opacity-50 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-white text-2xl font-bold">🎬 MovieBox</h1>
+            <div class="space-x-4">
+                <a href="/user-service" class="text-white hover:text-yellow-400 transition">Home</a>
+                <a href="/movie-service" class="text-white hover:text-yellow-400 transition">Movies</a>
+                <a href="/booking-service" class="text-white hover:text-yellow-400 transition">Bookings</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-8">
+            <h2 class="text-4xl font-bold text-white mb-4">Choose Your Theater</h2>
+            <p class="text-xl text-white opacity-90">Premium theaters across major cities</p>
+        </div>
+
+        <div class="glass rounded-lg p-6 mb-8">
+            <div class="flex flex-wrap gap-4 justify-center">
+                {% for city in theaters.keys() %}
+                <button class="city-btn bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-6 py-3 rounded-lg font-semibold transition" 
+                        data-city="{{ city }}">
+                    {{ city }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% for city, city_theaters in theaters.items() %}
+        <div class="city-theaters mb-12" data-city="{{ city }}" style="display: none;">
+            <h3 class="text-2xl font-bold text-white mb-6 text-center">{{ city }} Theaters</h3>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for theater in city_theaters %}
+                <div class="theater-card glass rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="text-3xl mr-3">🏢</div>
+                        <div>
+                            <h4 class="text-xl font-bold text-white">{{ theater.name }}</h4>
+                            <p class="text-yellow-400 text-sm">{{ theater.location }}</p>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-white opacity-80 text-sm mb-2">
+                            <span class="font-semibold">Screens:</span> {{ theater.screens }}
+                        </p>
+                        <p class="text-white opacity-80 text-sm">
+                            <span class="font-semibold">Showtimes:</span>
+                        </p>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            {% for showtime in showtimes %}
+                            <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs">{{ showtime }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <button class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 rounded-lg transition">
+                        Select Theater
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <footer class="bg-black bg-opacity-50 py-8 mt-16">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center items-center space-x-6 mb-4">
+                <a href="https://www.youtube.com/@LearnWithKASTRO" target="_blank" class="text-red-500 hover:text-red-400 transition">
+                    <svg class="w-6 h-6 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                    YouTube
+                </a>
+                <a href="https://linkedin.com/in/kastro-kiran" target="_blank" class="text-blue-500 hover:text-blue-400 transition">
+                    <svg class="w-6 h-6 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                    LinkedIn
+                </a>
+            </div>
+            <p class="text-white opacity-70">© 2024 MovieBox. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const cityButtons = document.querySelectorAll('.city-btn');
+        const cityTheaters = document.querySelectorAll('.city-theaters');
+
+        cityButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const city = button.getAttribute('data-city');
+                
+                // Update active button
+                cityButtons.forEach(btn => {
+                    btn.classList.remove('bg-yellow-500', 'text-black');
+                    btn.classList.add('bg-white', 'bg-opacity-20', 'text-white');
+                });
+                button.classList.remove('bg-white', 'bg-opacity-20', 'text-white');
+                button.classList.add('bg-yellow-500', 'text-black');
+
+                // Show selected city theaters
+                cityTheaters.forEach(theaters => {
+                    theaters.style.display = 'none';
+                });
+                
+                const selectedCityTheaters = document.querySelector(`[data-city="${city}"]`);
+                if (selectedCityTheaters) {
+                    selectedCityTheaters.style.display = 'block';
+                }
+            });
+        });
+
+        // Show first city by default
+        if (cityButtons.length > 0) {
+            cityButtons[0].click();
+        }
+    </script>
+</body>
+</html>
